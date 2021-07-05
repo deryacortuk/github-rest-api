@@ -2,23 +2,22 @@ from flask import Flask,render_template,request
 import requests
 
 app=Flask(__name__)
-base_url = "https://api.github.com/users/"
 
-@app.route("/",methods=["POST","GET"])
+url ="https://api.github.com/users/"
+
+@app.route('/',methods=["POST","GET"])
 def index():
-    if request.method =="POST":
-        githubname=request.form.get("githubname")
-        response_user = requests.get(base_url + githubname)
-        
-        response_repos=requests.get(base_url + githubname + "/repos")
-        user_info = response_user.json()
-        repos =response_repos.json()
-        if "message" in user_info:
-              return render_template("index.html",error ="the user is not exist")
-        else:
-            return render_template("index.html",profile=user_info,repos =repos)  
-    else:  
-        return render_template("index.html")
+    if request.method=="POST":
+        username =request.form.get("githubname")
 
-if __name__=="__main__":
-    app.run(debug=True)
+        response =requests.get(url+username)
+
+        response_repo =requests.get(url+username+"/repos")
+        user =response.json()
+        repo =response_repo.json()
+
+        if "message" in user:
+            return render_template("index.html",error="User is not found")
+
+        return render_template("index.html",profile=user,repos=repo)
+    return render_template("index.html")
